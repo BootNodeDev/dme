@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model UniswapV3 {
+    id            String   @id @default(cuid())
+    // Grouping and timestamp
+    fetchedAt     DateTime // Timestamp for the batch fetch (set once per API call)
+    walletAddress String // The wallet address that was queried via the API
+
+    // Position specific identifiers from Revert API
+    nftId         Int // 'nft_id' - Unique ID for the LP token/position
+    poolAddress   String // 'pool' - Address of the LP pool
+    token0Address String // 'token0' - Address of token0
+    token1Address String // 'token1' - Address of token1
+    token0Symbol  String // Symbol for token0, e.g., "USDC" (from 'tokens' object)
+    token1Symbol  String // Symbol for token1, e.g., "WETH" (from 'tokens' object)
+    feeTier       String // 'fee_tier', e.g., "3000" for 0.3%
+
+    // For calculating total value of this position
+    currentAmount0 Decimal // 'current_amount0' - Amount of token0 in the position
+    currentAmount1 Decimal // 'current_amount1' - Amount of token1 in the position
+    // Prices are from the 'cash_flows' array, specifically from the object where type = "current-amount-state"
+    token0PriceUSD Decimal // 'prices.token0.usd' from the relevant cash_flow entry
+    token1PriceUSD Decimal // 'prices.token1.usd' from the relevant cash_flow entry
+
+    // PnL for this position
+    pnlUSD Decimal // 'performance.usd.pnl' - Profit and Loss in USD
+
+    // Unclaimed fees for this position
+    uncollectedFees0 Decimal // 'uncollected_fees0' - Unclaimed amount of token0
+    uncollectedFees1 Decimal // 'uncollected_fees1' - Unclaimed amount of token1
+
+    // Status and price range data for this position
+    inRange    Boolean // 'in_range' - True if the position is currently in range
+    poolPrice  Decimal // 'pool_price' - Current pool price (e.g., token1 per token0)
+    priceLower Decimal // 'price_lower' - Lower bound of the position's price range
+    priceUpper Decimal // 'price_upper' - Upper bound of the position's price range
+
+    @@index([walletAddress])
+}

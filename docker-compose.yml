@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: dme_db
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - dme_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+  migrate:
+    image: node:18-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    command: >
+      sh -c "npx prisma db push"
+    networks:
+      - app-network
+
+  # fetch:
+  #   container_name: dme_fetch
+  #   restart: on-failure
+  #   env_file:
+  #     - .env
+  #   build:
+  #     context: .
+  #     dockerfile: packages/fetch/Dockerfile
+  #   depends_on:
+  #     - migrate
+  #   networks:
+  #     - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  dme_data:
