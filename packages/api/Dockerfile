@@ -19,5 +19,5 @@ RUN npx prisma generate
 # Set working directory to the specific package
 WORKDIR /app/packages/api
 
-EXPOSE 3005
+EXPOSE 3030
 CMD ["pnpm", "start"]
