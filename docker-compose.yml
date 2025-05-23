@@ -30,19 +30,18 @@ services:
       sh -c "npx prisma db push"
     networks:
       - app-network
-
-  # fetch:
-  #   container_name: dme_fetch
-  #   restart: on-failure
-  #   env_file:
-  #     - .env
-  #   build:
-  #     context: .
-  #     dockerfile: packages/fetch/Dockerfile
-  #   depends_on:
-  #     - migrate
-  #   networks:
-  #     - app-network
+  fetch:
+    container_name: dme_fetch
+    restart: on-failure
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: packages/fetch/Dockerfile
+    depends_on:
+      - migrate
+    networks:
+      - app-network
 
 networks:
   app-network:
