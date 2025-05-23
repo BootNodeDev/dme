@@ -119,7 +119,7 @@ importers:
         specifier: ^7.4.1
         version: 7.4.4
 
-  packages/fetcher:
+  packages/fetch:
     dependencies:
       '@prisma/client':
         specifier: 5.15.0
