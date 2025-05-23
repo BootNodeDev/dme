@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { Router } from 'express';
 import { isAddress } from 'viem';
 
@@ -15,13 +16,20 @@ router.get('/positions/:walletAddress', async (req, res) => {
     }
 
     const prisma = getPrisma();
-    const positions = await prisma.uniswapV3.findMany({
+    const positions = await prisma.uniswapV3.findFirst({
       where: {
         walletAddress: walletAddress.toLowerCase(),
       },
+      orderBy: {
+        fetchedAt: 'desc',
+      },
     });
 
-    const formattedPositions = positions.map((position) => ({
+    if (!positions) {
+      return res.json([]);
+    }
+
+    const formattedPositions = [positions].map((position) => ({
       name: `${position.token0Symbol}/${position.token1Symbol} ${Number(position.feeTier) / 10000}%`,
       price: Number(position.poolPrice),
       positionLowerRange: Number(position.priceLower),
