@@ -42,7 +42,7 @@ services:
       - app-network
 
   api:
-    container_name: api
+    container_name: dme_api
     restart: on-failure
     env_file:
       - .env
